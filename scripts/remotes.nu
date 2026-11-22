@@ -15,7 +15,7 @@
 
 export const REMOTES = {
     origin: "git@github.com:Dodai-Tech/dodaitech-website.git"
-    gitea-starscream: "gitea@192.168.1.44:sorin/dodaitech-website.git"
+    gitea-starscream: "gitea@192.168.1.44:Dodai-Tech/dodaitech-website.git"
 }
 
 # The wanted remotes that are configured, in REMOTES order.

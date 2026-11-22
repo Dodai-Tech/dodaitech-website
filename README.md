@@ -64,7 +64,7 @@ Whitespace and quotes around the two values are trimmed.
 ## Another machine
 
 ```sh
-git clone git@github.com:Dodai-Tech/dodaitech-website.git     # or gitea@192.168.1.44:sorin/dodaitech-website.git
+git clone git@github.com:Dodai-Tech/dodaitech-website.git     # or gitea@192.168.1.44:Dodai-Tech/dodaitech-website.git
 cd dodaitech-website
 just setup-remotes    # adds whichever of origin and gitea-starscream is missing
 just check
