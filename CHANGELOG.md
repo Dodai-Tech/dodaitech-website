@@ -18,6 +18,7 @@ All notable changes to this project are documented here. It is generated from
 
 ### 🔧 Chores
 
+- Align with the Rust house standard ([`b4d9a5b`](https://github.com/Dodai-Tech/dodaitech-website/commit/b4d9a5b9db9b11c5b65d38fb74e3cdce26b52660))
 - Gitea repo moved to the Dodai-Tech organization ([`26bc3b4`](https://github.com/Dodai-Tech/dodaitech-website/commit/26bc3b40c54048f9dafa00c14c00b61198976373))
 
 
