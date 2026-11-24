@@ -10,8 +10,13 @@ fn main() -> ExitCode {
             .into_iter()
             .find(|t| t.id() == "dodai-dark")
             .expect("dodai-dark theme");
-        dodaitech_website::shaders::render(Path::new("static"), &theme);
-        return ExitCode::SUCCESS;
+        return match dodaitech_website::shaders::render(Path::new("static"), &theme) {
+            Ok(()) => ExitCode::SUCCESS,
+            Err(e) => {
+                eprintln!("rendering the shaders: {e}");
+                ExitCode::FAILURE
+            }
+        };
     }
     let out = Path::new(arg.as_deref().unwrap_or("public"));
     match dodaitech_website::build_site(Path::new("static"), out) {

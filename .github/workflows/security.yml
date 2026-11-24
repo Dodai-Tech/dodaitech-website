@@ -41,3 +41,47 @@ jobs:
         run: cargo install cargo-deny --locked
       - name: Check advisories, licenses, bans, sources
         run: cargo deny check
+
+  udeps:
+    name: cargo udeps (nightly)
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install Rust nightly
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain nightly
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+      - name: Install cargo-udeps
+        run: cargo install cargo-udeps --locked
+      - name: Unused dependencies (compiled graph, catches what machete misses)
+        run: cargo +nightly udeps --workspace --all-targets
+
+  features:
+    name: cargo hack --each-feature
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: hustcer/setup-nu@v3
+        with:
+          version: "0.116.1"
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-hack
+      - name: Every feature on its own compiles
+        run: nu scripts/ci/extra_checks.nu features
+
+  duplicates:
+    name: duplicate dependency versions
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: hustcer/setup-nu@v3
+        with:
+          version: "0.116.1"
+      - name: Report crates built in several versions
+        run: nu scripts/ci/extra_checks.nu duplicates

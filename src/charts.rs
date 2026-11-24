@@ -59,13 +59,24 @@ fn line() -> String {
     let (w, h) = (300.0, 140.0);
     let a = poly(&pts(&SERIES, w, h, 40.0));
     let b = poly(&pts(&SERIES2, w, h, 40.0));
-    format!("<svg viewBox=\"-6 -6 312 152\">{}<polyline pathLength=\"1\" class=\"draw\" points=\"{a}\" stroke=\"{}\"/><polyline pathLength=\"1\" class=\"draw d2\" points=\"{b}\" stroke=\"{}\"/></svg>", grid(w, h), C[0], C[1])
+    format!(
+        "<svg viewBox=\"-6 -6 312 152\">{}<polyline pathLength=\"1\" class=\"draw\" points=\"{a}\" stroke=\"{}\"/><polyline pathLength=\"1\" class=\"draw d2\" points=\"{b}\" stroke=\"{}\"/></svg>",
+        grid(w, h),
+        C[0],
+        C[1]
+    )
 }
 
 fn area() -> String {
     let (w, h) = (300.0, 140.0);
     let p = pts(&SERIES, w, h, 40.0);
-    format!("<svg viewBox=\"-6 -6 312 152\">{}<polygon class=\"fadein\" points=\"0,{h} {} {w},{h}\" fill=\"{c}\" fill-opacity=\".25\"/><polyline pathLength=\"1\" class=\"draw\" points=\"{}\" stroke=\"{c}\"/></svg>", grid(w, h), poly(&p), poly(&p), c = C[2])
+    format!(
+        "<svg viewBox=\"-6 -6 312 152\">{}<polygon class=\"fadein\" points=\"0,{h} {} {w},{h}\" fill=\"{c}\" fill-opacity=\".25\"/><polyline pathLength=\"1\" class=\"draw\" points=\"{}\" stroke=\"{c}\"/></svg>",
+        grid(w, h),
+        poly(&p),
+        poly(&p),
+        c = C[2]
+    )
 }
 
 fn bars() -> String {
@@ -73,7 +84,14 @@ fn bars() -> String {
     s += &grid(300.0, 140.0);
     for (i, v) in SERIES.iter().enumerate() {
         let hh = v / 40.0 * 140.0;
-        let _ = write!(s, "<rect class=\"grow\" style=\"animation-delay:{}ms\" x=\"{}\" y=\"{}\" width=\"16\" height=\"{hh}\" rx=\"3\" fill=\"{}\"/>", i * 70, 6.0 + i as f32 * 25.0, 140.0 - hh, C[i % 2]);
+        let _ = write!(
+            s,
+            "<rect class=\"grow\" style=\"animation-delay:{}ms\" x=\"{}\" y=\"{}\" width=\"16\" height=\"{hh}\" rx=\"3\" fill=\"{}\"/>",
+            i * 70,
+            6.0 + i as f32 * 25.0,
+            140.0 - hh,
+            C[i % 2]
+        );
     }
     s + "</svg>"
 }
@@ -87,7 +105,14 @@ fn stacked() -> String {
         for (k, v) in [a, b, c].iter().enumerate() {
             let hh = v / 60.0 * 140.0;
             y -= hh;
-            let _ = write!(s, "<rect class=\"grow\" style=\"animation-delay:{}ms\" x=\"{}\" y=\"{y}\" width=\"26\" height=\"{}\" fill=\"{}\"/>", i * 80 + k * 120, 8.0 + i as f32 * 36.0, hh - 1.0, C[k]);
+            let _ = write!(
+                s,
+                "<rect class=\"grow\" style=\"animation-delay:{}ms\" x=\"{}\" y=\"{y}\" width=\"26\" height=\"{}\" fill=\"{}\"/>",
+                i * 80 + k * 120,
+                8.0 + i as f32 * 36.0,
+                hh - 1.0,
+                C[k]
+            );
         }
     }
     s + "</svg>"
@@ -100,9 +125,25 @@ fn pie(donut: bool) -> String {
     for (i, p) in parts.iter().enumerate() {
         let e = a + p * 2.0 * PI;
         if donut {
-            let _ = write!(s, "<path class=\"fadein\" style=\"animation-delay:{}ms\" d=\"{}\" fill=\"none\" stroke=\"{}\" stroke-width=\"22\"/>", i * 160, arc(70.0, 70.0, 48.0, a + 0.03, e - 0.03), C[i]);
+            let _ = write!(
+                s,
+                "<path class=\"fadein\" style=\"animation-delay:{}ms\" d=\"{}\" fill=\"none\" stroke=\"{}\" stroke-width=\"22\"/>",
+                i * 160,
+                arc(70.0, 70.0, 48.0, a + 0.03, e - 0.03),
+                C[i]
+            );
         } else {
-            let _ = write!(s, "<path class=\"fadein\" style=\"animation-delay:{}ms\" d=\"M70,70 L{:.1},{:.1} A62,62 0 {} 1 {:.1},{:.1} Z\" fill=\"{}\"/>", i * 160, 70.0 + 62.0 * a.cos(), 70.0 + 62.0 * a.sin(), u8::from(e - a > PI), 70.0 + 62.0 * e.cos(), 70.0 + 62.0 * e.sin(), C[i]);
+            let _ = write!(
+                s,
+                "<path class=\"fadein\" style=\"animation-delay:{}ms\" d=\"M70,70 L{:.1},{:.1} A62,62 0 {} 1 {:.1},{:.1} Z\" fill=\"{}\"/>",
+                i * 160,
+                70.0 + 62.0 * a.cos(),
+                70.0 + 62.0 * a.sin(),
+                u8::from(e - a > PI),
+                70.0 + 62.0 * e.cos(),
+                70.0 + 62.0 * e.sin(),
+                C[i]
+            );
         }
         a = e;
     }
@@ -125,7 +166,12 @@ fn radar() -> String {
         );
     }
     let p: Vec<_> = v.iter().enumerate().map(|(i, r)| at(i, r * 60.0)).collect();
-    let _ = write!(s, "<polygon class=\"breathe\" points=\"{}\" fill=\"{c}\" fill-opacity=\".3\" stroke=\"{c}\" stroke-width=\"2\"/>", poly(&p), c = C[0]);
+    let _ = write!(
+        s,
+        "<polygon class=\"breathe\" points=\"{}\" fill=\"{c}\" fill-opacity=\".3\" stroke=\"{c}\" stroke-width=\"2\"/>",
+        poly(&p),
+        c = C[0]
+    );
     s + "</svg>"
 }
 
@@ -135,13 +181,24 @@ fn scatter() -> String {
     for i in 0..34 {
         let x = (i * 37 % 100) as f32 * 2.9 + 4.0;
         let y = 130.0 - ((i * 53 % 100) as f32 * 0.55 + x * 0.25).min(125.0);
-        let _ = write!(s, "<circle class=\"pulse\" style=\"animation-delay:{}ms\" cx=\"{x:.0}\" cy=\"{y:.0}\" r=\"{}\" fill=\"{}\" opacity=\".8\"/>", i * 90, 3 + i % 4, C[i % 3]);
+        let _ = write!(
+            s,
+            "<circle class=\"pulse\" style=\"animation-delay:{}ms\" cx=\"{x:.0}\" cy=\"{y:.0}\" r=\"{}\" fill=\"{}\" opacity=\".8\"/>",
+            i * 90,
+            3 + i % 4,
+            C[i % 3]
+        );
     }
     s + "</svg>"
 }
 
 fn gauge() -> String {
-    format!("<svg viewBox=\"0 0 160 100\"><path d=\"{}\" class=\"track\"/><path pathLength=\"1\" class=\"draw\" d=\"{}\" stroke=\"{}\" stroke-width=\"14\" stroke-linecap=\"round\"/><text x=\"80\" y=\"82\" text-anchor=\"middle\" class=\"big\">72%</text></svg>", arc(80.0, 86.0, 62.0, PI, 2.0 * PI), arc(80.0, 86.0, 62.0, PI, PI + 0.72 * PI), C[0])
+    format!(
+        "<svg viewBox=\"0 0 160 100\"><path d=\"{}\" class=\"track\"/><path pathLength=\"1\" class=\"draw\" d=\"{}\" stroke=\"{}\" stroke-width=\"14\" stroke-linecap=\"round\"/><text x=\"80\" y=\"82\" text-anchor=\"middle\" class=\"big\">72%</text></svg>",
+        arc(80.0, 86.0, 62.0, PI, 2.0 * PI),
+        arc(80.0, 86.0, 62.0, PI, PI + 0.72 * PI),
+        C[0]
+    )
 }
 
 fn heat() -> String {
@@ -149,7 +206,14 @@ fn heat() -> String {
     for r in 0..6 {
         for c in 0..16 {
             let v = (((r * 7 + c * 3) % 11) as f32 / 10.0).max(0.1);
-            let _ = write!(s, "<rect class=\"fadein\" style=\"animation-delay:{}ms\" x=\"{}\" y=\"{}\" width=\"17\" height=\"17\" rx=\"3\" fill=\"{}\" fill-opacity=\"{v:.2}\"/>", (r + c) * 40, c as f32 * 19.5, r as f32 * 21.0, C[0]);
+            let _ = write!(
+                s,
+                "<rect class=\"fadein\" style=\"animation-delay:{}ms\" x=\"{}\" y=\"{}\" width=\"17\" height=\"17\" rx=\"3\" fill=\"{}\" fill-opacity=\"{v:.2}\"/>",
+                (r + c) * 40,
+                c as f32 * 19.5,
+                r as f32 * 21.0,
+                C[0]
+            );
         }
     }
     s + "</svg>"
@@ -165,14 +229,27 @@ fn candles() -> String {
         p = c.clamp(25.0, 115.0);
         let (hi, lo) = (o.max(c) + 6.0, o.min(c) - 6.0);
         let col = if c >= o { C[1] } else { C[3] };
-        let _ = write!(s, "<g class=\"fadein\" style=\"animation-delay:{}ms\"><line x1=\"{x}\" x2=\"{x}\" y1=\"{hi}\" y2=\"{lo}\" stroke=\"{col}\" stroke-width=\"1.5\"/><rect x=\"{}\" y=\"{}\" width=\"10\" height=\"{}\" fill=\"{col}\"/></g>", i * 60, 14.0 + i as f32 * 18.0 - 5.0, o.min(c), d.abs().max(2.0), x = 14.0 + i as f32 * 18.0);
+        let _ = write!(
+            s,
+            "<g class=\"fadein\" style=\"animation-delay:{}ms\"><line x1=\"{x}\" x2=\"{x}\" y1=\"{hi}\" y2=\"{lo}\" stroke=\"{col}\" stroke-width=\"1.5\"/><rect x=\"{}\" y=\"{}\" width=\"10\" height=\"{}\" fill=\"{col}\"/></g>",
+            i * 60,
+            14.0 + i as f32 * 18.0 - 5.0,
+            o.min(c),
+            d.abs().max(2.0),
+            x = 14.0 + i as f32 * 18.0
+        );
     }
     s + "</svg>"
 }
 
 fn spark() -> String {
     let p = poly(&pts(&SERIES, 200.0, 40.0, 40.0));
-    format!("<svg viewBox=\"-4 -4 208 48\"><polyline pathLength=\"1\" class=\"draw\" points=\"{p}\" stroke=\"{}\"/><circle class=\"pulse\" cx=\"200\" cy=\"{:.1}\" r=\"4\" fill=\"{}\"/></svg>", C[1], 40.0 - SERIES[11], C[1])
+    format!(
+        "<svg viewBox=\"-4 -4 208 48\"><polyline pathLength=\"1\" class=\"draw\" points=\"{p}\" stroke=\"{}\"/><circle class=\"pulse\" cx=\"200\" cy=\"{:.1}\" r=\"4\" fill=\"{}\"/></svg>",
+        C[1],
+        40.0 - SERIES[11],
+        C[1]
+    )
 }
 
 fn treemap() -> String {
@@ -186,7 +263,17 @@ fn treemap() -> String {
     ];
     let mut s = String::from("<svg viewBox=\"0 0 272 142\">");
     for (i, (x, y, w, h)) in cells.iter().enumerate() {
-        let _ = write!(s, "<rect class=\"fadein\" style=\"animation-delay:{}ms\" x=\"{}\" y=\"{}\" width=\"{}\" height=\"{}\" rx=\"4\" fill=\"{}\" fill-opacity=\"{}\"/>", i * 140, x + 1.0, y + 1.0, w - 2.0, h - 2.0, C[i % 3], 0.9 - i as f32 * 0.1);
+        let _ = write!(
+            s,
+            "<rect class=\"fadein\" style=\"animation-delay:{}ms\" x=\"{}\" y=\"{}\" width=\"{}\" height=\"{}\" rx=\"4\" fill=\"{}\" fill-opacity=\"{}\"/>",
+            i * 140,
+            x + 1.0,
+            y + 1.0,
+            w - 2.0,
+            h - 2.0,
+            C[i % 3],
+            0.9 - i as f32 * 0.1
+        );
     }
     s + "</svg>"
 }

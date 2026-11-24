@@ -1,8 +1,8 @@
 #!/usr/bin/env nu
 # ──────────────────────────────────────────────────────────────────────────────
-# Dodai Tech website — One git operation on every remote
+# Dodai Tech — One git operation on every remote
 # ──────────────────────────────────────────────────────────────────────────────
-# GitHub (origin) and Gitea (gitea-starscream) are independent hosts, no mirroring.
+# GitHub (origin), Gitea (gitea-starscream) and Codeberg (codeberg) are independent hosts, no mirroring.
 # Unconfigured remotes are skipped; a failing remote doesn't stop the others, but
 # the run fails at the end.
 #
@@ -15,7 +15,8 @@
 
 export const REMOTES = {
     origin: "git@github.com:Dodai-Tech/dodaitech-website.git"
-    gitea-starscream: "gitea@192.168.1.44:Dodai-Tech/dodaitech-website.git"
+    gitea-starscream: "gitea@192.168.1.44:sorin/dodaitech-website.git"
+    codeberg: "ssh://git@codeberg.org/Dodai-Tech/dodaitech-website.git"
 }
 
 # The wanted remotes that are configured, in REMOTES order.

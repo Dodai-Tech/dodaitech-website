@@ -14,10 +14,6 @@ assert equal (missing_env {}) [CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID]
 assert equal (missing_env {CLOUDFLARE_API_TOKEN: "t" CLOUDFLARE_ACCOUNT_ID: ""}) [CLOUDFLARE_ACCOUNT_ID]
 assert equal (missing_env {CLOUDFLARE_API_TOKEN: "t" CLOUDFLARE_ACCOUNT_ID: "a"}) []
 
-use ../ci.nu gate
-assert equal (gate | first | first 2) [cargo fmt]
-assert ((gate | each {|c| $c.0 } | uniq) == [cargo])
-
 assert equal (clean_env {CLOUDFLARE_ACCOUNT_ID: " abc123\n" CLOUDFLARE_API_TOKEN: "\"tok\""}) {CLOUDFLARE_API_TOKEN: tok CLOUDFLARE_ACCOUNT_ID: abc123}
 assert equal (clean_env {OTHER: "x"}) {}
 assert equal (missing_env (clean_env {CLOUDFLARE_API_TOKEN: "t" CLOUDFLARE_ACCOUNT_ID: "  "})) [CLOUDFLARE_ACCOUNT_ID]

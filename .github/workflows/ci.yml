@@ -3,39 +3,77 @@ name: CI
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: [main, master, develop]
   workflow_dispatch:
+    inputs:
+      full_matrix:
+        description: Also test on macOS and Windows (automatic on public repos)
+        type: boolean
+        default: false
 
 env:
   CARGO_TERM_COLOR: always
-  RUSTUP_MAX_RETRIES: "10"
 
 concurrency:
-  group: ci-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
-  check:
-    name: fmt, clippy, tests, build
+  # fmt + clippy + tests + versions + nu tests —
+  # the same script `just check-all` runs.
+  gate:
+    name: quality gate
     runs-on: ubuntu-latest
-    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v7
-      - name: Install Rust stable
-        run: |
-          for i in 1 2 3 4 5; do
-            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable --component rustfmt,clippy && break
-            [ $i = 5 ] && exit 1
-            echo "rustup install failed, retrying..."; sleep 15
-          done
-          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt,clippy
+      - uses: Swatinem/rust-cache@v2
       - uses: hustcer/setup-nu@v3
         with:
           version: "0.116.1"
-      - uses: actions/setup-node@v7
+      - name: Install system packages
+        run: nu scripts/ci/apt.nu
+      - name: Quality gate
+        run: nu scripts/ci/quality_gate.nu
+
+  # The binary ships for all three systems: paths, line endings and process
+  # handling differ there.
+  test:
+    name: test (${{ matrix.os }})
+    # A private repo pays 10x for macOS and 2x for Windows minutes: there this
+    # runs only when dispatched with full_matrix.
+    if: ${{ !github.event.repository.private || inputs.full_matrix }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: cargo test --workspace
+        run: cargo test --workspace --all-features
+
+  msrv:
+    name: MSRV (1.90)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      # @master + toolchain, not @1.90: Dependabot would bump a version ref.
+      - uses: dtolnay/rust-toolchain@master
         with:
-          node-version: 22
-      - run: nu scripts/ci.nu
+          toolchain: "1.90"
+      - uses: Swatinem/rust-cache@v2
+      - uses: hustcer/setup-nu@v3
+        with:
+          version: "0.116.1"
+      - name: Install system packages
+        run: nu scripts/ci/apt.nu
+      - name: cargo check
+        run: cargo check --workspace --locked
 
   coverage:
     name: coverage (at least 95% of lines)

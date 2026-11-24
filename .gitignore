@@ -1,9 +1,9 @@
 /target
 /public
-/fuzz/target
-/fuzz/corpus
-/fuzz/artifacts
 .wrangler
 /fuzz/target/
 /fuzz/corpus/
 /fuzz/artifacts/
+/RELEASE_NOTES.md
+.DS_Store
+.codegraph/

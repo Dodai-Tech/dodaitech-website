@@ -32,6 +32,5 @@ pub fn copy_dir(from: &Path, to: &Path) -> io::Result<()> {
 /// Returns the I/O error of copying `static_dir`.
 pub fn build_site(static_dir: &Path, out: &Path) -> io::Result<()> {
     copy_dir(static_dir, out)?;
-    site::build(out);
-    Ok(())
+    site::build(out)
 }

@@ -21,9 +21,9 @@ scripts/    Nushell: ci, coverage, deploy, remotes, showcase build (tests in scr
 
 | Task | Command |
 |---|---|
-| Build into `public/` | `just build` |
+| Build into `public/` | `just site` |
 | Preview at http://127.0.0.1:8765 | `just serve` |
-| Gate before every commit: fmt, clippy, tests, build, dry-run deploy | `just check` |
+| Gate before every commit: fmt, clippy, tests, docs, unused deps, script tests | `just check-all` |
 | Coverage with a floor of 95 % of lines | `just coverage` |
 | Advisories, licences, bans, sources | `just audit` |
 | Fuzz a chart target for a minute | `just fuzz chart_points` |
@@ -77,7 +77,7 @@ just check
   Dodai UI; the theme switch is on the right pages; the store links are there.
 * `just coverage` fails below 95 % of lines (now 100 %). `main.rs` and `shaders.rs` are left out: the first
   only parses arguments, the second needs a GPU and ffmpeg.
-* Scripts have their own tests: `nu scripts/tests/run.nu`.
+* Scripts have their own tests: `nu scripts/tests/run_all.nu`.
 * clippy runs with `-D warnings`; `missing_docs` is on.
 * `just audit` and the nightly security workflow run `cargo audit` and `cargo deny`; the fuzz workflow
   hammers the chart maths.
@@ -86,7 +86,7 @@ just check
 
 | Workflow | When | What |
 |---|---|---|
-| `ci.yml` | pull request, push to `main` | `nu scripts/ci.nu` and the coverage floor |
+| `ci.yml` | pull request, push to `main` | `nu scripts/ci/quality_gate.nu`, the coverage floor, MSRV and macOS and Windows tests |
 | `deploy.yml` | push to `main`, by hand | build and `wrangler deploy` |
 | `security.yml` | nightly, dependency changes | `cargo audit`, `cargo deny check` |
 | `fuzz.yml` | nightly, source changes | 60 s per target in `fuzz/` |

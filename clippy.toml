@@ -1,0 +1,10 @@
+# unwrap() and expect() are fine in tests; clippy::unwrap_used (Cargo.toml) guards the shipped code.
+allow-unwrap-in-tests = true
+allow-expect-in-tests = true
+
+# Thresholds behind the smells in rust-in-projects/references/rust-code.md.
+# Hitting one means restructure, not #[allow].
+too-many-arguments-threshold = 7
+cognitive-complexity-threshold = 20
+type-complexity-threshold = 250
+too-many-lines-threshold = 120
